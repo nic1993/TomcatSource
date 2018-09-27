@@ -45,26 +45,24 @@ public class HttpServer1 {
 				socket = serverSocket.accept();
 				input = socket.getInputStream();
 				output = socket.getOutputStream();
-				
-				System.out.println("request: start!" );
+
 				Request request = new Request(input);
 				request.parse();
 				
-				System.out.println("response: start!" );
 				Response response = new Response(output);
 				response.setRequest(request);
 				
-				
-				if(request.getUri().startsWith("/servlet")) {
+				if(request.getUri().startsWith("/servlet/")) {
 					
+					ServletProcessor1 servletProcessor1 = new ServletProcessor1();
+					servletProcessor1.process(request, response);
+				}else {
+					StaticResourceProcessor processor = new StaticResourceProcessor();
+					processor.process(request, response);
 				}
-				
-				response.sendStaticResource();
-				
-				socket.close();
-				
+
 				shutdown = request.getUri().equals(SHUTDOWN_COMMAND);
-				
+				socket.close();
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -73,6 +71,5 @@ public class HttpServer1 {
 			}
 		}
 		
-				
 	}
 }
